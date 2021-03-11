@@ -35,12 +35,11 @@ const UserSchema = new mongoose.Schema({
     },
  
     resetCode: {type: Number, default: ""},
-    status: {type: Number, default: 0},
+    status: {type: Number, default: 1},
     
     isAdmin: {
         type: Boolean,
         default: false,
-        required: true
     },
     averageRating:{
         type:Number,
@@ -63,6 +62,10 @@ const UserSchema = new mongoose.Schema({
         default:null
     },
     address:{
+        type:String,
+        default:null
+    },
+    phone_no:{
         type:String,
         default:null
     }

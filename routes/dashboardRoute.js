@@ -46,9 +46,6 @@ router.get('/adminstats',auth,admin, async (req, res) => {
         const paginate = {
          
           
-            TotalPatients:TotalPatients,
-            TotalRiPatient:TotalRiPatient,
-            TotalVIPatient:TotalVIPatient,
             data:totalData
             
         }

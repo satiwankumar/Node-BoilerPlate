@@ -8,15 +8,7 @@ module.exports = async function (req, res, next) {
     //verify token
     try {
         const header = req.header('Authorization');
-       
 
-        let pathname = req.baseUrl + req.route.path
-    //   console.log(pathname)
-    if(!header && (pathname=="/api/property/"  || pathname=="/api/property/:property_id" ||  pathname=="/api/property/searchproperty")){
-            console.log("called base Url pathname")
-            next()
-            return;
-    }
 
 
 
@@ -35,7 +27,8 @@ module.exports = async function (req, res, next) {
         
         const decoded = jwt.verify(token, config.get('jwtSecret'))
         req.user = decoded;
-        // console.log(req.user)
+        console.log(req.user)
+
 
         // if(req.user.status !==1){
         //     return res.status(401).json({msg:'You are block please contact Admin to Activate Account'})

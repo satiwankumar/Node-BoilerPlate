@@ -82,24 +82,7 @@ exports.Register = async (req, res, next) => {
 
         user.image = `${url}${user.image}`
 
-        // const body = JSON.stringify()
-        //   console.log(body)
-        //   const response1 =   await axios.post('https://dev28.onlinetestingserver.com/soachatapi/api/user/add',
-        //     {
-        //         "appid": Appid,
-        //         "secret_key": Secretkey,
-        //         "id": user._id, /* Unique Identifier in your system*/
-        //         "name": user.firstname+" "+ user.lastname,
-        //         "avatar": user.image
-        //       }
-        //   )
-        //   .then(function (response) {
-        //     return res.json(response)
-        //   })
-        //   .catch(function (error) {
-        //     console.log(error);
-        //   });
-
+     
         res.status(200).json({
             message: "Registration Success, please login to proceed",
             token: token,
@@ -166,6 +149,7 @@ exports.EditProfile  =  async (req, res) => {
         lastname,
         city,
         country,
+        phone_no,
         state,
         zip_code,
         address 
@@ -185,11 +169,12 @@ exports.EditProfile  =  async (req, res) => {
         }
         user.firstname = firstname
         user.lastname = lastname,
-        user.city=city?city:null,
-        user.country=country?country:null,
-        user.state=state?state:null,
-        user.zip_code=zip_code?zip_code:null,
-        user.address=address?address:null
+        user.city=city?city:user.city,
+        user.country=country?country:user.country,
+        user.state=state?state:user.state,
+        user.zip_code=zip_code?zip_code: user.zip_code,
+        user.address=address?address:user.address
+        user.phone_no=phone_no?phone_no:user.phone_no
             await user.save();
         const url =   baseUrl(req)  
         user.image = `${url}${user.image}`
@@ -342,4 +327,62 @@ exports.UploadProfilePicture = async (req, res) => {
     }
 
 
+}
+
+exports.Update_User =async (req, res) => {
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+    }
+
+
+    const {
+        firstname,
+        lastname,
+        city,
+        country,
+        state,
+        zip_code,
+        address ,
+        phone_no
+
+    } = req.body;
+
+
+    try {
+
+
+        let user = await User.findOne({ _id: req.params.userId })
+        // console.log(user)
+        if (!user) {
+            return res
+                .status(400)
+                .json({ message: 'no  User Found' });
+        }
+        user.firstname = firstname
+        user.lastname = lastname,
+        user.city=city?city:user.city,
+        user.country=country?country:user.country,
+        user.state=state?state:user.state,
+        user.zip_code=zip_code?zip_code:user.zip_code,
+        user.address=address?address:user.address
+        user.phone_no=phone_no?phone_no:user.phone_no
+
+            await user.save();
+        const url =   baseUrl(req)  
+        user.image = `${url}${user.image}`
+        const resuser = user
+        res.status(200).json({
+            message: "User Profile Updated Successfully",
+            user: resuser
+        });
+    } catch (err) {
+      
+       
+            const errors =[]
+            errors.push({message : err.message}) 
+            res.status(500).json({ errors: errors });
+        
+    }
 }

@@ -29,17 +29,10 @@ app.get("/uploads/images/:name", (req, res) => {
 
     res.sendFile(path.join(__dirname, `./uploads/images/${req.params.name}`));
   });
-  app.get("/uploads/about/:name", (req, res) => {
  
-    // const myURL  = new URL(req.url)
-    // console.log(myURL.host);
-
-    res.sendFile(path.join(__dirname, `./uploads/about/${req.params.name}`));
-  });
-
 
 app.get('/',(req,res)=>{
-    res.send('tabsRealEstate Server Real')
+    res.send('apto Server Runing')
 })
 app.listen(port,()=>{
     console.log(`Server is running at the port ${port}`)

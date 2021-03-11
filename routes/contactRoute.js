@@ -6,8 +6,9 @@ const { check, validationResult } = require('express-validator')
 
 
 const Contact = require('../models/Contact.model')
-const auth = require('../middleware/authMiddleware')
 const admin = require('../middleware/adminMiddleware')
+const auth = require('../middleware/authMiddleware');
+const checkObjectId = require('../middleware/checkobjectId');
 
 
 
@@ -16,10 +17,8 @@ const admin = require('../middleware/adminMiddleware')
 
 
 
-router.post('/',[
-    check('first_name', 'First Name is required').not().isEmpty(),
-    check('last_name', 'Last Name is required').not().isEmpty(),
-    check('email', 'Email is required').isEmail(),
+router.post('/',auth,[
+    check('subject', 'please enter Subject').not().isEmpty(),
     check('message', 'please enter messages').not().isEmpty(),
     
 
@@ -35,9 +34,8 @@ router.post('/',[
 
         //create new user
         let contact = new Contact({
-            first_name: req.body.first_name,
-            last_name:req.body.last_name,
-            email: req.body.email,
+            user:req.user._id,
+            subject:req.body.subject,
             message:req.body.message
 
             //   image: req.file.path 
@@ -78,14 +76,14 @@ router.get('/', [auth,admin], async (req, res) => {
    
     
 const search = searchBy ?{"$or":[ 
-    { first_name: { '$regex': `${searchBy}`, $options: "i" }},
-    {last_name: { '$regex': `${searchBy}`, $options: "i" }},
-    {email: { '$regex': `${searchBy}`, $options: "i" }} ] }: {};
+    { "user.first_name": { '$regex': `${searchBy}`, $options: "i" }},
+    {"user.last_name": { '$regex': `${searchBy}`, $options: "i" }},
+    {"user.email": { '$regex': `${searchBy}`, $options: "i" }} ] }: {};
 
 
 
     try {
-        let contacts = await Contact.find({...search}).limit(per_page).skip(offset).sort(sort)
+        let contacts = await Contact.find({...search}).populate('user').limit(per_page).skip(offset).sort(sort)
         // console.log(users)
         if (!contacts.length) {
             return res
@@ -108,6 +106,43 @@ const search = searchBy ?{"$or":[
 });
 
 
+
+router.get('/:contact_id', [auth,admin,checkObjectId('contact_id')], async (req, res) => {
+
+    let contact_id = req.params.contact_id
+
+    try {
+        let contact = await Contact.findOne({ _id: contact_id }).populate('user').lean();
+        if (!contact) return res.status(400).json({ message: 'contact Detail not found' });
+    
+    
+        return res.status(200).json(contact)
+
+
+    } catch (error) {
+        // console.error(error.message);
+        res.status(500).json({ "error": error.message })
+    }
+});
+
+router.post('/remove',[auth,admin],async(req,res)=>{
+    try { 
+   const contact_id = req.body.contact_id
+    const contact =  await  Contact.findOneAndDelete({ _id: contact_id })
+        if(!contact){
+  return res.status(200).json({"message":"Feedback not found"})
+
+ } 
+  return res.status(200).json({"message":"Feedback deleted Successfully"})
+
+    } catch (err) {
+        console.error(err.message);
+        return res.status(500).json({ error: err.message });
+    }
+  
+
+
+})
 
 
 

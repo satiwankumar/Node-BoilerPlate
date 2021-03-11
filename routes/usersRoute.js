@@ -88,6 +88,23 @@ router.post('/status/:status', [auth, admin], UserController.ApproveAndBlockUser
 
 
 
+
+
+router.post('/edit/:userId',
+[
+    auth,
+    checkObjectId('userId'),
+    [
+        check('firstname', 'firstname is required').not().isEmpty(),
+        check('lastname', 'lastname is required').not().isEmpty()
+        
+    ],
+],
+UserController.Update_User
+);
+
+
+
 // router.delete('/delete/:id',[auth,admin],async (req,res)=>{
 //     const id = req.params.id
 

@@ -50,6 +50,7 @@ router.post(
         ).exists(),
     ],
     async (req, res) => {
+        
         let error = []
 
         const errors = validationResult(req);
